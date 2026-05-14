@@ -13,7 +13,7 @@ on:
 env:
   AWS_REGION: eu-west-2
   TF_VERSION: "1.15.1"
-  TF_WORKSPACE: dev
+  TF_WORKSPACE: prod
  
 
   # push:
@@ -53,8 +53,6 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan \
-            -parallelism=40 \
-            -refresh=false \
             -out=tfplan \
             -var-file=environments/${{ env.TF_WORKSPACE }}.tfvars  
         # run: terraform plan 
