@@ -4,10 +4,13 @@ on:
   # schedule:
   #   - cron: '0 14 * * *'     # Cron job to run at 2:00 PM UTC every day
   push:
-    branches: [ main]
+    branches: [ main, develop ] 
     # branches: 
       # - main
-      # - dev
+      # - develop
+  # pull_request:
+    # branches: [ main, develop ] 
+
     # workflow_dispatch: # Allows manual triggering of the workflow from the GitHub Actions tab - ONLY MANUAL TRIGGER — no auto-run!
 
 env:
