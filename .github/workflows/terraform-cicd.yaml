@@ -51,9 +51,9 @@ jobs:
       #   run: terraform validate
 
       #  SELECT / SET WORKSPACE
-      - name: Terraform Workspace
-        run: |
-          terraform workspace select prod || terraform workspace new prod
+      # - name: Terraform Workspace
+      #   run: |
+      #     terraform workspace select prod || terraform workspace new prod
 
       - name: Terraform Plan
         run: |
