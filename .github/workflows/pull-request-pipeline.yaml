@@ -57,5 +57,5 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan \
-        -refresh=false \             # Huge speedup
-        -var-file=env/dev.tfvars  # Use dev variables for PRs (no secrets)
+            -refresh=false            # Huge speedup
+     
