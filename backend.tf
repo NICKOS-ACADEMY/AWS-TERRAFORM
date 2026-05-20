@@ -3,7 +3,7 @@ terraform {
     bucket         = "nickos-bucket"
     key            = "prod/terraform.tfstate"
     region         = "eu-west-2"
-    use_lockfile = "terraform-locks"
+    use_lockfile   =  false
     encrypt        = true
   }
 }
