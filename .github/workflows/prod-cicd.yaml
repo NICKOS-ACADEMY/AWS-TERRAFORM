@@ -1,4 +1,5 @@
-name: Terraform CI/CD Pipeline apply for main branch
+name: Terraform CI/CD Pipeline — Production
+# TRIGGERS: On push to main branch (production) and optionally on develop or feature branches
 
 on:
   # schedule:
@@ -6,13 +7,18 @@ on:
   push:
     branches:  
      - main
+     - feature/terraform-dev
+     - develop   # Uncomment if you want to trigger on dev branch pushes as well
+  # pull_request:
+  #   branches:
+  #     - main  
+        # - develop  
 
     # workflow_dispatch: # Allows manual triggering of the workflow from the GitHub Actions tab - ONLY MANUAL TRIGGER — no auto-run!
 
 env:
   AWS_REGION: eu-west-2
   TF_VERSION: "1.15.1"
-  TF_WORKSPACE: prod
  
 
   # push:
@@ -27,6 +33,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+       # # AUTH AWS — OIDC (NO KEYS REQUIRED)
+      # - name: Authenticate AWS via OIDC
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::123456789012:role/github-actions-deploy
+      #     aws-region: ${{ env.AWS_REGION }}
 
         # Authenticate to AWS
       - name: Configure AWS
@@ -49,29 +62,22 @@ jobs:
       # - name: Terraform Validate
       #   run: terraform validate
 
-      #  SELECT / SET WORKSPACE
-      # - name: Terraform Workspace
-      #   run: |
-      #     terraform workspace select prod || terraform workspace new prod
-
       - name: Terraform Plan
-        run: |
-          terraform plan \
-              -out=tfplan \
-            # -var-file=environments/${{ env.TF_WORKSPACE }}.tfvars  
-              -var-file=environments/prod.tfvars  
+        run: terraform plan -out=tfplan
 
   terraform-apply:   # Separate job for apply, triggered only on push to main
     needs: terraform-plan    #  Only runs this job AFTER plan succeeds
     runs-on: ubuntu-latest
+
     environment:
       name: prod
   
   # THIS ADDS APPROVAL STEP BEFORE APPLYING TO PRODUCTION
-    if: github.ref == 'refs/heads/main'  # Only run apply on main branch
-    
+    # if: github.ref == 'refs/heads/main'  # This condition only runs apply on main branch
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       # Authenticate to AWS again for the Apply job
       - name: Configure AWS for Apply
@@ -86,21 +92,52 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      # APPLY — ONLY AFTER APPROVAL
+      - name: Terraform Init
+        run: terraform init
+
+      # APPLY — ONLY AFTER APPROVAL use GitHub Environments with required reviewers for the prod environment (repo → Settings → Environments → prod → Add required reviewer)  
       - name: Terraform Apply
         run: |
           terraform apply \
-            -parallelism=40 \
             -refresh=true \
             -auto-approve \
-            -var-file=environments/${{ env.TF_WORKSPACE }}.tfvars
 
-      # - name: Terraform Destroy
-      #   if: github.ref == 'refs/heads/dev' 
-      #   run: |
-      #     terraform destroy \
-      #     -parallelism=40 \
-      #     -var-file=environments/dev.tfvars
+  terraform-destroy:   # Separate job for destroy, triggered only on push to main
+    needs: terraform-apply    #  Only runs this job AFTER plan succeeds
+    runs-on: ubuntu-latest
+
+    environment:
+      name: prod
+  
+  # THIS ADDS APPROVAL STEP BEFORE APPLYING TO PRODUCTION
+    # if: github.ref == 'refs/heads/main'  # This condition only runs apply on main branch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Authenticate to AWS again for the Apply job
+      - name: Configure AWS for Destroy
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }} 
+
+      # Setup Terraform
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        # if: github.ref == 'refs/heads/main'  # Only run destroy on main branch (optional, be careful with this!)
+        run: |
+          terraform destroy \
+          -refresh=true \
+          -auto-approve \
 
 
 

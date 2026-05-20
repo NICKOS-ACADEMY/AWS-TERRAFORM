@@ -1,18 +1,4 @@
-# # Configure the AWS Provider
-# terraform {
-#   required_providers {
-#     aws = {
-#       source  = "hashicorp/aws"
-#       version = "~> 5.0"
-#     }
-#   }
-# }
 
-# provider "aws" {
-#   region = "eu-west-2" 
-# }
-
-# ------------------------------
 # 1. VPC
 # ------------------------------
 resource "aws_vpc" "nickos_vpc" {
@@ -127,7 +113,6 @@ resource "aws_s3_bucket" "nickos-bucket" {
 
   tags = {
     Name        = "nickos-bucket"
-    Environment = "Dev"
   }
 }
 

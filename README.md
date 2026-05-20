@@ -43,3 +43,15 @@ Ex:
 instance_count = 1   # dev
 instance_count = 1    # staging
 instance_count = 3   # prod
+
+
+CICD PIPELINE STEPS 
+Configure Manual Approval in GitHub FOR TERRAFORM APPLY
+
+GitHub repository - Settings → Environments - New environmen - Create - production
+Open the production - Deployment protection rules
+Enable/check 'Required reviewers'
+Add reviewers:
+yourself
+@devops-team 
+Save protection rules
