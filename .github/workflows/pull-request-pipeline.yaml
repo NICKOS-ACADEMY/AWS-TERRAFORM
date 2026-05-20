@@ -2,10 +2,14 @@ name: Terraform CI — Pull Request
 # TRIGGERS: ONLY on Pull Request events
 
 on: 
-    # pull_request:
-  branches:
+  push:
+    branches:
      - feature/*  
-     - develop 
+     - develop    
+    # pull_request:
+  # branches: 
+  #    - develop
+  #    - main 
 
 env:
   AWS_REGION: eu-west-2
