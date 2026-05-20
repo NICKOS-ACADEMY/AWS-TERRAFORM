@@ -5,7 +5,7 @@ on:
     # pull_request:
     branches:
       - feature/*  
-      - develop 
+      # - develop 
 
 env:
   AWS_REGION: eu-west-2
