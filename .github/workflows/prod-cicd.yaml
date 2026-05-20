@@ -1,4 +1,5 @@
-name: Terraform CI/CD Pipeline apply for main branch
+name: Terraform CI/CD Pipeline — Production
+# TRIGGERS: On push to main branch (production) and optionally on develop or feature branches
 
 on:
   # schedule:
@@ -6,12 +7,12 @@ on:
   push:
     branches:  
      - main
-     - feature/* 
+     - feature/terraform-dev
      - develop   # Uncomment if you want to trigger on dev branch pushes as well
   # pull_request:
   #   branches:
-  #     - main    
-
+  #     - main  
+        # - develop  
 
     # workflow_dispatch: # Allows manual triggering of the workflow from the GitHub Actions tab - ONLY MANUAL TRIGGER — no auto-run!
 
@@ -73,7 +74,6 @@ jobs:
   
   # THIS ADDS APPROVAL STEP BEFORE APPLYING TO PRODUCTION
     # if: github.ref == 'refs/heads/main'  # This condition only runs apply on main branch
-      if: github.ref == 'refs/heads/ feature/terraform-dev'  # This condition only runs apply on main branch
 
     steps:
       - name: Checkout code
