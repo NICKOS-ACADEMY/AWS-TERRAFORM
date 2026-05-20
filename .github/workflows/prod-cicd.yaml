@@ -95,7 +95,7 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      # APPLY — ONLY AFTER APPROVAL
+      # APPLY — ONLY AFTER APPROVAL use GitHub Environments with required reviewers for the prod environment (repo → Settings → Environments → prod → Add required reviewer)  
       - name: Terraform Apply
         run: |
           terraform apply \
@@ -104,11 +104,11 @@ jobs:
 
 
       # - name: Terraform Destroy
-      #   if: github.ref == 'refs/heads/dev' 
+      #   if: github.ref == 'refs/heads/main'  # Only run destroy on main branch (optional, be careful with this!)
       #   run: |
       #     terraform destroy \
-      #     -parallelism=40 \
-      #     -var-file=environments/dev.tfvars
+      #     -refresh=true \
+      #     -auto-approve \
 
 
 
