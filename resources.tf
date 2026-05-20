@@ -113,7 +113,6 @@ resource "aws_s3_bucket" "nickos-bucket" {
 
   tags = {
     Name        = "nickos-bucket"
-    Environment = "Dev"
   }
 }
 
