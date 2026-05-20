@@ -96,10 +96,9 @@ jobs:
       - name: Terraform Apply
         run: |
           terraform apply \
-            -parallelism=40 \
             -refresh=true \
             -auto-approve \
-            -var-file=environments/${{ env.TF_WORKSPACE }}.tfvars
+
 
       # - name: Terraform Destroy
       #   if: github.ref == 'refs/heads/dev' 
