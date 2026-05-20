@@ -57,9 +57,9 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan \
-            -out=tfplan \
+              -out=tfplan \
             # -var-file=environments/${{ env.TF_WORKSPACE }}.tfvars  
-        # run: terraform plan 
+              -var-file=environments/prod.tfvars  
 
   terraform-apply:   # Separate job for apply, triggered only on push to main
     needs: terraform-plan    #  Only runs this job AFTER plan succeeds
