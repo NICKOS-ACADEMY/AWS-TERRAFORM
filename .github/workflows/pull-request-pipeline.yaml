@@ -1,28 +1,20 @@
 name: Terraform CI — Pull Request
 # TRIGGERS: ONLY on Pull Request events
 
-on:
-  pull_request:
+on: 
+    pull_request:
     branches:
-      - main
-      - develop
-    paths:
-      - 'terraform/**'    # Only run if Terraform files changed
-      - '.github/workflows/pull-request-pipeline.yml'
+      - feature/*  
+      - develop 
 
 env:
   AWS_REGION: eu-west-2
   TF_VERSION: "1.9.8"
-  TF_ROOT: ./terraform     # Path to your .tf files
-  TF_IN_AUTOMATION: true  # Tells Terraform it's running in CI
 
 jobs:
   terraform-plan-ci:
     name: Terraform Plan
     runs-on: ubuntu-latest  # Github runner
-    defaults:
-      run:
-        working-directory: ${{ env.TF_ROOT }}
 
     # permissions:
     #   id-token: write                   #  Required for AWS OIDC
@@ -42,6 +34,7 @@ jobs:
       #     aws-region: ${{ env.AWS_REGION }}
 
    # Authenticate to AWS
+        # Authenticate to AWS
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -49,38 +42,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }} 
 
-      # SETUP/DOWNLOAD TERRAFORM
+       # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-          terraform_wrapper: true        # Makes output cleaner
 
-      #  TERRAFORM FORMAT CHECK
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive  #  Fails if code not properly formatted
-
-      # INITIALIZE TO DOWNLOAD PROVIDERS, MODULES, ETC. — OPTIMIZED FOR SPEED 
       - name: Terraform Init
         run: terraform init
-            # -backend-config="bucket=my-terraform-state-dev" \
-            # -backend-config="key=terraform.tfstate" \
-            # -backend-config="region=${{ env.AWS_REGION }}" \
-            # -backend-config="dynamodb_table=my-terraform-locks-dev" \
-            # -reconfigure
-  
-      # VALIDATE SYNTAX
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
       - name: Terraform Validate
-        run: terraform validate  # Fails if invalid syntax, missing vars, etc.
+        run: terraform validate
 
-      #  SELECT / SET WORKSPACE
-      - name: Terraform Workspace
-        run: |
-          terraform workspace select dev || terraform workspace new dev
-
-      #  TERRAFORM PLAN — FAST OPTIMIZED
       - name: Terraform Plan
-        run: |
-          terraform plan \
-            -refresh=false \             # ✅ Huge speedup
-            -var-file=env/dev.tfvars
+        run: terraform plan -out=tfplan \
+        -refresh=false \             # Huge speedup
+        -var-file=env/dev.tfvars  # Use dev variables for PRs (no secrets)
+        
