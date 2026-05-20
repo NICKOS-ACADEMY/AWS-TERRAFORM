@@ -103,7 +103,7 @@ jobs:
             -auto-approve \
 
   terraform-destroy:   # Separate job for destroy, triggered only on push to main
-    needs: terraform-plan    #  Only runs this job AFTER plan succeeds
+    needs: terraform-apply    #  Only runs this job AFTER plan succeeds
     runs-on: ubuntu-latest
 
     environment:
