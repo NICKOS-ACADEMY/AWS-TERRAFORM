@@ -133,7 +133,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Destroy
-        if: github.ref == 'refs/heads/main'  # Only run destroy on main branch (optional, be careful with this!)
+        # if: github.ref == 'refs/heads/main'  # Only run destroy on main branch (optional, be careful with this!)
         run: |
           terraform destroy \
           -refresh=true \
