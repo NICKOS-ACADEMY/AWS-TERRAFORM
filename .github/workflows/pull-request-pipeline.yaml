@@ -3,9 +3,9 @@ name: Terraform CI — Pull Request
 
 on: 
     # pull_request:
-    branches:
-      - feature/*  
-      # - develop 
+  branches:
+     - feature/*  
+     - develop 
 
 env:
   AWS_REGION: eu-west-2
