@@ -3,7 +3,7 @@ terraform {
     bucket         = "nickos-bucket"
     key            = "prod/terraform.tfstate"
     region         = "eu-west-2"
-    dynamodb_table = "terraform-locks"
+    use_lockfile = "terraform-locks"
     encrypt        = true
   }
 }
